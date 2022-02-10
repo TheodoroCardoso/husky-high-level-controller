@@ -21,6 +21,10 @@
  	<node name="husky_high_level_controller" 
 	 	  pkg="husky_high_level_controller" 
 		  type="husky_high_level_controller"
-		  output="screen"/>
+		  output="screen">
+	</node>
+
+	<node name="rviz" pkg="rviz" type="rviz" 
+		  args="-d $(find husky_high_level_controller)/config/rviz.rviz"/>
 
 </launch>
