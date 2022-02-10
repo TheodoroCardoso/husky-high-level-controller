@@ -2,6 +2,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
+#include <geometry_msgs/Twist.h>
 
 namespace husky_high_level_controller {
 
@@ -15,9 +16,19 @@ public:
 	virtual ~HuskyHighLevelController();
 
 private:
-	void scanCallback(const sensor_msgs::LaserScan::ConstPtr& msg);		
+	void scanCallback(const sensor_msgs::LaserScan::ConstPtr& msg);
+	void setTwist();
+
 	ros::NodeHandle _nh;
 	ros::Subscriber _sub;
+	ros::Publisher _pub;
+	ros::Rate _loop {10};
+
+	double _minDistance;
+	double _obstacleAngle;
+
+	double _paramLinearX;
+	double _paramAngularYawGain;
 };
 
 } /* namespace */

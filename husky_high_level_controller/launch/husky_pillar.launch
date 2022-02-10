@@ -22,6 +22,9 @@
 	 	  pkg="husky_high_level_controller" 
 		  type="husky_high_level_controller"
 		  output="screen">
+
+		<rosparam file="$(find husky_high_level_controller)/config/parameters.yaml" command="load"/>
+
 	</node>
 
 	<node name="rviz" pkg="rviz" type="rviz" 
