@@ -17,4 +17,10 @@
     	<arg name="laser_enabled" value="$(arg laser_enabled)"/>
 	</include>
 
+	
+ 	<node name="husky_high_level_controller" 
+	 	  pkg="husky_high_level_controller" 
+		  type="husky_high_level_controller"
+		  output="screen"/>
+
 </launch>
