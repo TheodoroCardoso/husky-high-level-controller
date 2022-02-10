@@ -22,10 +22,11 @@ private:
 	ros::NodeHandle _nh;
 	ros::Subscriber _sub;
 	ros::Publisher _pub;
-	ros::Rate _loop {10};
+	ros::Rate _loop {30};
 
 	double _minDistance;
 	double _obstacleAngle;
+	double _paramCircleRadius;
 
 	double _paramLinearX;
 	double _paramAngularYawGain;
