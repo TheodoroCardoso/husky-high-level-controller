@@ -1,22 +1,22 @@
-# Husky High Level Controller
+# Husky High-Level Controller
 
-This is a simulation of Husky using ROS, Gazebo and RViz for Udacity C++ Software Engineer Nanodegree Capstone Project. 
-I chose this ND because I wanted to improve my C++ skills in order to become a better roboticist.
+This is a simulation of Husky using ROS, Gazebo, and RViz for Udacity C++ Software Engineer Nanodegree Capstone Project. 
+I chose this ND because I wanted to improve my C++ skills to become a better roboticist.
 So for my capstone project, I decided to create a ROS Package.
 
 ## Objective 
 The original idea is derived from the [ETH Zurich Programming for Robotics - ROS course](https://rsl.ethz.ch/education-students/lectures/ros.html)
 
-The initial goal of the exercises was to drive Husky towards the pillar on the map using a simple proportional controller based on the only obstacle detected by the robot and adjusting it's heading accordingly.
-A detail explanation of the exercise can be found [here](https://ethz.ch/content/dam/ethz/special-interest/mavt/robotics-n-intelligent-systems/rsl-dam/ROS2020/Exercise%20Session%203.pdf).
+The initial goal of the exercises was to drive Husky towards the pillar on the map using a simple proportional controller based on the only obstacle detected by the robot and adjusting its heading accordingly.
+A detailed explanation of the exercise can be found [here](https://ethz.ch/content/dam/ethz/special-interest/mavt/robotics-n-intelligent-systems/rsl-dam/ROS2020/Exercise%20Session%203.pdf).
 
 To make my work unique, I extrapolated the exercise requirement and instead of colliding the robot against the pillar, now it enters a circular trajectory around it.
-This is accomplished by segmenting the control routine in two parts. The robot is always driving forward, but on the first part, it aims at the pillar.
-When it gets closer, the angular velocity command is obtained by the sum of a feedforward compenent that sends Husky on a circle around the pillar and a proportional feedback component responsible for making sure the robot remains at the desired distance from the obstacle during the trajectory.
+This is accomplished by segmenting the control routine into two parts. The robot is always driving forward, but in the first part, it aims at the pillar.
+When it gets closer, the angular velocity command is obtained by the sum of a feedforward component that sends Husky on a circle around the pillar and a proportional feedback component responsible for making sure the robot remains at the desired distance from the obstacle during the trajectory.
 
-The radius of the trajectory as well as other parameters can be configured at `husky_high_level_controller/config/params.yaml`
+The radius of the trajectory, as well as other parameters, can be configured at `husky_high_level_controller/config/params.yaml`
 
-The gif below shows a quick demonstrates the resultant behavior. The right side of the screen shows the simulation running on Gazebo. On the top left corner the robot's x and y positions are being plotted, right below it RViz displays the robot model, some TFs, the laser scan, and a marker that denotes the obstacle point that is closest to Husky. 
+The gif below demonstrates the resultant behavior. The right side of the screen shows the simulation running on Gazebo. On the top left corner, the robot's x and y positions are being plotted, right below it, RViz displays the robot model, some TFs, the laser scan, and a marker that denotes the obstacle point that is closest to Husky. 
 
 ![](demo.gif "Project Demo")
 
@@ -37,7 +37,7 @@ The best place to run this project is on Udacity RoboND virtual environment with
 ## Husky - setup the robot packages:
 For the simulation, a Husky package is required [Click here for the installation instructions](http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky).
 
-Here are the commands you will actually need to execute to avoid problems on the installation process.
+Here are the commands you will need to execute to avoid problems in the installation process.
 
 `sudo apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116`
 
