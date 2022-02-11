@@ -36,6 +36,9 @@ private:
 
 	double _paramLinearX;
 	double _paramAngularYawGain;
+
+    // Feedforward control signal for circular trajectory.
+    float _ffYawControl;
 };
 
 } /* namespace */

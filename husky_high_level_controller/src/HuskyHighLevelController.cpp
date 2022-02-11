@@ -16,6 +16,10 @@ HuskyHighLevelController::HuskyHighLevelController(ros::NodeHandle& nodeHandle) 
   _sub = _nh.subscribe("/scan", 10, &HuskyHighLevelController::scanCallback, this);
   _pub = _nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
+  // cache circular trajectory angular speed (feedforward controller) 
+  // 1.3 m is the distance from the center of the pillar to the centor of the robot
+	_ffYawControl = (_paramLinearX / (_paramCircleRadius + 1.3));
+
   markerSetUp();
   _markerPub = _nh.advertise<visualization_msgs::Marker>("/visualization_marker", 10);
 
@@ -40,41 +44,32 @@ void HuskyHighLevelController::scanCallback(const sensor_msgs::LaserScan::ConstP
 	}
   _obstacleAngle = msg->angle_min + minIndex * msg->angle_increment;
   _minDistance = min;
-  ROS_INFO_STREAM_THROTTLE(2.0,"Minimum Range: " << _minDistance << " m   | Obstacle Angle: " << _obstacleAngle << " rad");
+  ROS_INFO_STREAM_THROTTLE(3.0,"Minimum Range: " << _minDistance << " m   | Obstacle Angle: " << _obstacleAngle << " rad");
 }
 
 void HuskyHighLevelController::setTwist() {
   geometry_msgs::Twist twist;
-  float angleReference =  M_PI / 2;
-  float angularDiff = angleReference -_obstacleAngle;
-  float distanceError = _paramCircleRadius - _minDistance;    
-
-  // Normalize angle -pi~pi
-  angularDiff = fmod(angularDiff + M_PI, 2 * M_PI);
-  if (angularDiff < 0) angularDiff += 2 * M_PI;
-  float angularError = angularDiff - M_PI;
-  
-  
   twist.linear.x = _paramLinearX;
 
-  // Go towards pillar
+  // Go straight towards pillar
   if (_minDistance > _paramCircleRadius) twist.angular.z = - _obstacleAngle * _paramAngularYawGain;
-  // Rotate to start circulating behavior
-  else if (abs(angularError) > (M_PI / 8)) { 
-    twist.linear.x = 0;  
-    twist.angular.z = 0.2;
-  }
+
   // Keeps distance from pillar while going around it forever
   else {
-    twist.linear.x = _paramLinearX;
-    // Feedback proportional controller to correct trajectory
+    // Feedback proportional controller to correct trajectory error
+    float angleReference =  M_PI / 2;
+    float angularDiff = angleReference -_obstacleAngle;
+    float distanceError = _paramCircleRadius - _minDistance;    
+
+    // Normalize angle -pi,pi
+    angularDiff = fmod(angularDiff + M_PI, 2 * M_PI);
+    if (angularDiff < 0) angularDiff += 2 * M_PI;
+    float angularError = angularDiff - M_PI;
+
     float fbYawControl = _paramAngularYawGain * angularError + distanceError / 2;
-    // Feedforward controller. 1.3 m is to account for the half of the robot + pillar radius
-    float ffYawControl = (_paramLinearX / (_paramCircleRadius + 1.3));
-    twist.angular.z = fbYawControl - ffYawControl;    
-  }
-  ROS_INFO_STREAM_THROTTLE(1.0, "Distance Error: " << distanceError << " m | Angular Error: " << angularError << " rad");
-  
+    twist.angular.z = fbYawControl - _ffYawControl;
+    ROS_INFO_STREAM_THROTTLE(3.0, "Distance Error: " << distanceError << " m | Angular Error: " << angularError << " rad");    
+  } 
   _pub.publish(twist);
 }
 
