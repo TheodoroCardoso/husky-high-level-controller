@@ -16,8 +16,12 @@ HuskyHighLevelController::HuskyHighLevelController(ros::NodeHandle& nodeHandle) 
   _sub = _nh.subscribe("/scan", 10, &HuskyHighLevelController::scanCallback, this);
   _pub = _nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
+  markerSetUp();
+  _markerPub = _nh.advertise<visualization_msgs::Marker>("/visualization_marker", 10);
+
   while (ros::ok()) {
     setTwist();
+    pubMarker();
     ros::spinOnce();
     _loop.sleep();
   }
@@ -36,7 +40,7 @@ void HuskyHighLevelController::scanCallback(const sensor_msgs::LaserScan::ConstP
 	}
   _obstacleAngle = msg->angle_min + minIndex * msg->angle_increment;
   _minDistance = min;
-  ROS_INFO_STREAM_THROTTLE(2.0,"Minimum Range: " << _minDistance << " m | Obstacle Angle: " << _obstacleAngle << " rad");
+  ROS_INFO_STREAM_THROTTLE(2.0,"Minimum Range: " << _minDistance << " m   | Obstacle Angle: " << _obstacleAngle << " rad");
 }
 
 void HuskyHighLevelController::setTwist() {
@@ -69,9 +73,30 @@ void HuskyHighLevelController::setTwist() {
     float ffYawControl = (_paramLinearX / (_paramCircleRadius + 1.3));
     twist.angular.z = fbYawControl - ffYawControl;    
   }
-  ROS_INFO_STREAM_THROTTLE(1.0, "Angular Error = " << angularError << " rad || Distance Error = " << distanceError << " m");
+  ROS_INFO_STREAM_THROTTLE(1.0, "Distance Error: " << distanceError << " m | Angular Error: " << angularError << " rad");
   
   _pub.publish(twist);
+}
+
+void HuskyHighLevelController::pubMarker(){
+	_marker.header.stamp = ros::Time();
+	_marker.pose.position.x = _minDistance * cos(_obstacleAngle);
+	_marker.pose.position.y = _minDistance * sin(_obstacleAngle);
+	_markerPub.publish(_marker);
+}
+
+
+void HuskyHighLevelController::markerSetUp(){
+  _marker.header.frame_id = "base_laser";
+	_marker.type = visualization_msgs::Marker::SPHERE;
+	_marker.action = visualization_msgs::Marker::ADD;
+	_marker.pose.position.z = 1;
+  _marker.pose.orientation.w = 0.075;
+	_marker.scale.x = 0.15;
+	_marker.scale.y = 0.15;
+	_marker.scale.z = 0.15;
+	_marker.color.a = 1.0;
+	_marker.color.g = 1.0;	
 }
 
 } /* namespace */
