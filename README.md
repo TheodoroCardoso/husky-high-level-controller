@@ -5,7 +5,7 @@ I chose this ND because I wanted to improve my C++ skills to become a better rob
 So for my capstone project, I decided to create a ROS Package.
 
 ## Objective 
-The original idea is derived from the [ETH Zurich Programming for Robotics - ROS course](https://rsl.ethz.ch/education-students/lectures/ros.html)
+The idea is derived from the [ETH Zurich Programming for Robotics - ROS course](https://rsl.ethz.ch/education-students/lectures/ros.html)
 
 The initial goal of the exercises was to drive Husky towards the pillar on the map using a simple proportional controller based on the only obstacle detected by the robot and adjusting its heading accordingly.
 A detailed explanation of the exercise can be found [here](https://ethz.ch/content/dam/ethz/special-interest/mavt/robotics-n-intelligent-systems/rsl-dam/ROS2020/Exercise%20Session%203.pdf).
@@ -20,53 +20,76 @@ The gif below demonstrates the resultant behavior. The right side of the screen 
 
 ![](demo.gif "Project Demo")
 
-## Dependencies for Running Locally
+## Dependencies for Running Locally - Linux Only
 * cmake >= 2.8
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
+  * [click here for installation instructions](https://cmake.org/install/)
 * make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
+  * make is installed by default on most Linux distros
 * gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
+  * gcc / g++ is installed by default on most Linux distros
 * catkin_tools = latest version
-  * Linux: [Click here for installation instructions](https://catkin-tools.readthedocs.io/en/latest/installing.html)
+  * [Click here for installation instructions](https://catkin-tools.readthedocs.io/en/latest/installing.html)
+* python2
+  * There is a compatibility issue with python3, so one has to use python2 to run this project. To install, on your terminal, type 
+  ``` sh
+  $ sudo apt install python2
 
 ## Ubuntu - setup ROS & Gazebo:
 The package has been tested on ROS Kinetic and Gazebo 7.0 on Ubuntu 16.04. [Click here for installation instructions](http://wiki.ros.org/kinetic/Installation/Ubuntu). Select the Desktop-Full Install Repository.
-The best place to run this project is on Udacity RoboND virtual environment with GPU enabled.
 
 ## Husky - setup the robot packages:
 For the simulation, a Husky package is required [Click here for the installation instructions](http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky).
 
 Here are the commands you will need to execute to avoid problems in the installation process.
 
-`sudo apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116`
+``` sh
+$ sudo apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116`
+$ sudo -E apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654`
+$ sudo apt clean && sudo apt update`
+$ sudo apt-get update && apt-get upgrade`
+$ sudo apt-get install ros-kinetic-husky-simulator`
+```
+## How to Launch the simulation?
 
-`sudo -E apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654`
-
-`sudo apt clean && sudo apt update`
-
-`sudo apt-get update && apt-get upgrade`
-
-`sudo apt-get install ros-kinetic-husky-simulator`
-
-## Basic Build Instructions
-
-If you just installed ROS from apt on Ubuntu then you will have setup.*sh files in '/opt/ros/<distro>/', and you could source them like so: `source /opt/ros/<distro>/setup.bash`
+If you just installed ROS from apt on Ubuntu then you will have setup .*sh files in '/opt/ros/<distro>/', and you then source them this way: 
+``` sh
+$ source /opt/ros/<distro>/setup.bash 
+```
   
-### Setup ROS workspace
+#### Create a catkin_ws
+```sh
+$ cd /home/workspace/
+$ mkdir -p /home/workspace/catkin_ws/src/
+$ cd catkin_ws/src/
+$ catkin_init_workspace
+$ cd ..
+```
 
-1. Set your ROS workspace: `mkdir -p ~/catkin_ws/src`
-2. Open your ROS workspace: `cd ~/catkin_ws/`
-3. Initialize it with a hidden marker file: `catkin init`
+#### Clone the package in catkin_ws/src/
+```sh
+$ cd /home/workspace/catkin_ws/src/
+$ git clone https://github.com/TheodoroCardoso/husky-high-level-controller.git
+```
 
-### Build the project
-
-1. Open src: `cd ~/catkin_ws/src`
-2. Clone this repo
-3. Go back to workspace: `cd ~/catkin_ws`
-3. Build the project: `catkin build`
-4. Update your environment: `source devel/setup.bash`
-5. Launch the project: `roslaunch husky_highlevel_controller husky_pillar.launch`
+#### Build the packages
+```sh
+$ cd /home/workspace/catkin_ws/ 
+$ catkin_make
+```
+ 
+#### Now change the python --version to avoid bugs
+```sh
+$ sudo apt-get -y install python-rospkg
+$ export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
+$ sudo apt-get install virtualenv
+$ virtualenv -p /usr/bin/python2.7 --distribute temp-python
+$ source temp-python/bin/activate
+```
+ 
+#### Once packages have been built and the environment setup, you can launch the simulation!
+```sh
+$ roslaunch husky_high_level_controller husky_pillar.launch
+```
 
 ## Project Specification
 
